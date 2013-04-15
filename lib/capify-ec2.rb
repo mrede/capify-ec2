@@ -14,7 +14,7 @@ class CapifyEc2
   def symbolize_keys(hash)
     hash.keys.each do |key|
       hash[(key.to_sym rescue key) || key] = hash.delete(key)
-      if hash[key.to_sym].class == "Hash"
+      if hash[key.to_sym].class == Hash
         hash[key.to_sym] = symbolize_keys(hash[key.to_sym])
       end
     end
