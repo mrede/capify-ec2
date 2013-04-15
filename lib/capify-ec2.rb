@@ -10,6 +10,17 @@ class CapifyEc2
   unless const_defined? :SLEEP_COUNT
     SLEEP_COUNT = 5
   end
+
+  def symbolize_keys(hash)
+    hash.keys.each do |key|
+      hash[(key.to_sym rescue key) || key] = hash.delete(key)
+      if hash[key.to_sym].class == "Hash"
+        hash[key.to_sym] = symbolize_keys(hash[key.to_sym])
+      end
+    end
+    hash
+  end
+
   
   def initialize(ec2_config = "config/ec2.yml")
     case ec2_config
@@ -17,6 +28,9 @@ class CapifyEc2
       @ec2_config = ec2_config
     when String
       @ec2_config = YAML.load_file ec2_config
+      # Symbolize the keys
+      symbolize_keys(@ec2_config)
+
     else
       raise ArgumentError, "Invalid ec2_config: #{ec2_config.inspect}"
     end
